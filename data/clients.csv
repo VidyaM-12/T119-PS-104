@@ -1,0 +1,13 @@
+client_id,client_name,city,kyc_verified,account_status
+CLI-001,Karthik Prasad,Mangaluru,true,ACTIVE
+CLI-002,Geetha Yadav,Nagpur,true,ACTIVE
+CLI-003,Prakash Verma,Nagpur,true,ACTIVE
+CLI-004,Keerthi Naik Pvt Ltd,Tumakuru,false,ACTIVE
+CLI-005,Pallavi Prasad,Belagavi,true,ACTIVE
+CLI-006,Ishita Jain Pvt Ltd,Coimbatore,true,ACTIVE
+CLI-007,Nandini Jain Pvt Ltd,Vijayawada,false,ACTIVE
+CLI-008,Meena Mehta,Indore,true,INACTIVE
+CLI-009,Sahana Agarwal,Bengaluru,true,ACTIVE
+CLI-010,Suresh Murthy,Mangaluru,false,ACTIVE
+CLI-011,Yamuna Shetty Pvt Ltd,Mumbai,false,ACTIVE
+CLI-012,Mohan Agarwal,Kochi,true,ACTIVE

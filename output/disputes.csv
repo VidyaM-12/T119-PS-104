@@ -1,0 +1,4 @@
+milestone_id,raised_by,outcome_pct_freelancer,arbitration_fee,fee_paid_by,freelancer_net,client_refund
+MS-007,CLIENT,50.00,1000.00,BOTH,12000.00,15000.00
+MS-013,CLIENT,75.00,2000.00,CLIENT,27000.00,10000.00
+MS-010,CLIENT,0.00,2000.00,FREELANCER,0.00,20000.00

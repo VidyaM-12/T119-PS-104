@@ -1,0 +1,21 @@
+freelancer_id,freelancer_name,gender,city,reliability_level,fy_gross_released_to_date,enhanced_kyc,clean_releases_since_demotion
+FRL-001,Radha Prasad,F,Indore,B,120000.00,true,0
+FRL-002,Ananya Rao,F,Chennai,C,120000.00,false,0
+FRL-003,Nandini Menon,F,Kochi,C,120000.00,false,2
+FRL-004,Tejaswini Rao,F,Coimbatore,A,120000.00,false,0
+FRL-005,Abhishek Prasad,M,Kochi,B,0.00,false,0
+FRL-006,Sneha Bhat,F,Indore,A,480000.00,true,0
+FRL-007,Nisha Shah,F,Bengaluru,A,0.00,false,0
+FRL-008,Thomas Menon,M,Mumbai,A,300000.00,true,0
+FRL-009,Madhu Shetty,F,Bengaluru,A,300000.00,false,0
+FRL-010,Shruti Kulkarni,F,Indore,C,0.00,false,0
+FRL-011,Pooja Das,F,Hyderabad,A,300000.00,false,0
+FRL-012,Pallavi Shetty,F,Jaipur,A,120000.00,true,0
+FRL-013,Pavan Iyer,M,Mysuru,A,50000.00,false,0
+FRL-014,Rahul Prasad,M,Indore,A,50000.00,false,0
+FRL-015,Vivek Jain,M,Hyderabad,A,300000.00,false,0
+FRL-016,Shalini Sheikh,F,Nagpur,C,0.00,false,0
+FRL-017,Ramesh Banerjee,M,Mysuru,A,0.00,true,0
+FRL-018,Abhishek Menon,M,Indore,A,0.00,false,0
+FRL-019,Girish Singh,M,Hyderabad,A,120000.00,true,0
+FRL-020,Pooja Chowdhury,F,Coimbatore,A,50000.00,true,0

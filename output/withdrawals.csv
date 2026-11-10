@@ -1,0 +1,41 @@
+line_no,freelancer_id,requested,status,fee,paid,available_after,message
+40,FRL-006,12000.00,REJECTED,0.00,0.00,0.00,Insufficient released and unlocked balance
+45,FRL-005,45000.00,REJECTED,0.00,0.00,0.00,Insufficient released and unlocked balance
+54,FRL-009,8000.00,REJECTED,0.00,0.00,0.00,Insufficient released and unlocked balance
+55,FRL-001,2500.00,ACCEPTED,25.00,2475.00,51000.00,Withdrawal processed
+67,FRL-014,20000.00,REJECTED,0.00,0.00,0.00,Insufficient released and unlocked balance
+72,FRL-015,2500.00,REJECTED,0.00,0.00,0.00,Insufficient released and unlocked balance
+76,FRL-009,12000.00,REJECTED,0.00,0.00,0.00,Insufficient released and unlocked balance
+77,FRL-020,1000.00,REJECTED,0.00,0.00,0.00,Insufficient released and unlocked balance
+82,FRL-004,2500.00,ACCEPTED,25.00,2475.00,27900.00,Withdrawal processed
+88,FRL-014,12000.00,REJECTED,0.00,0.00,0.00,Insufficient released and unlocked balance
+98,FRL-017,20000.00,REJECTED,0.00,0.00,0.00,Insufficient released and unlocked balance
+99,FRL-019,45000.00,REJECTED,0.00,0.00,0.00,Insufficient released and unlocked balance
+114,FRL-014,8000.00,REJECTED,0.00,0.00,0.00,Insufficient released and unlocked balance
+117,FRL-018,5000.00,ACCEPTED,25.00,4975.00,122250.00,Withdrawal processed
+118,FRL-006,12000.00,ACCEPTED,0.00,12000.00,35200.00,Withdrawal processed
+127,FRL-004,1000.00,ACCEPTED,25.00,975.00,26925.00,Withdrawal processed
+141,FRL-015,12000.00,ACCEPTED,0.00,12000.00,12000.00,Withdrawal processed
+142,FRL-006,12000.00,ACCEPTED,0.00,12000.00,23200.00,Withdrawal processed
+145,FRL-013,900.00,REJECTED,0.00,0.00,0.00,"Minimum withdrawal is Rs. 1,000"
+148,FRL-013,9500.00,ACCEPTED,25.00,9475.00,6500.00,Withdrawal processed
+152,FRL-018,5000.00,ACCEPTED,25.00,4975.00,117275.00,Withdrawal processed
+157,FRL-014,8000.00,REJECTED,0.00,0.00,0.00,Insufficient released and unlocked balance
+165,FRL-012,5000.00,ACCEPTED,25.00,4975.00,31000.00,Withdrawal processed
+176,FRL-007,12000.00,REJECTED,0.00,0.00,0.00,Insufficient released and unlocked balance
+190,FRL-002,20000.00,REJECTED,0.00,0.00,18750.00,Insufficient released and unlocked balance
+192,FRL-009,2500.00,ACCEPTED,25.00,2475.00,45800.00,Withdrawal processed
+204,FRL-007,5000.00,REJECTED,0.00,0.00,0.00,Insufficient released and unlocked balance
+205,FRL-001,2500.00,ACCEPTED,25.00,2475.00,48525.00,Withdrawal processed
+209,FRL-016,5000.00,REJECTED,0.00,0.00,0.00,Insufficient released and unlocked balance
+212,FRL-006,250000.00,REJECTED,0.00,0.00,23200.00,Insufficient released and unlocked balance
+213,FRL-011,1000.00,ACCEPTED,25.00,975.00,91200.00,Withdrawal processed
+217,FRL-009,12000.00,ACCEPTED,0.00,12000.00,33825.00,Withdrawal processed
+221,FRL-016,2500.00,REJECTED,0.00,0.00,0.00,Insufficient released and unlocked balance
+222,FRL-010,15000.00,REJECTED,0.00,0.00,0.00,Insufficient released and unlocked balance
+223,FRL-020,8000.00,REJECTED,0.00,0.00,0.00,Insufficient released and unlocked balance
+224,FRL-020,8000.00,REJECTED,0.00,0.00,0.00,Insufficient released and unlocked balance
+226,FRL-019,5000.00,REJECTED,0.00,0.00,0.00,Insufficient released and unlocked balance
+227,FRL-016,12000.00,REJECTED,0.00,0.00,0.00,Insufficient released and unlocked balance
+229,FRL-019,45000.00,REJECTED,0.00,0.00,0.00,Insufficient released and unlocked balance
+230,FRL-007,1000.00,REJECTED,0.00,0.00,0.00,Insufficient released and unlocked balance
