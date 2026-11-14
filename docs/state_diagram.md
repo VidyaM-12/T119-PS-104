@@ -32,4 +32,4 @@ stateDiagram-v2
     MEDIATION --> ARBITRATION
     ARBITRATION --> RESOLVED
     RESOLVED --> [*]
-```
+```   

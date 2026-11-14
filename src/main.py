@@ -75,7 +75,7 @@ def validate_input_data(data):
         "clients": {"client_id", "kyc_verified", "account_status"},
         "freelancers": {"freelancer_id", "reliability_level", "fy_gross_released_to_date", "enhanced_kyc"},
         "projects": {"project_id", "client_id", "freelancer_id", "created_date"},
-        "milestones": {"milestone_id", "project_id", "amount"},
+        "milestones": {"milestone_id", "project_id", "amount", "due_date"},
         "relationship_history": {"client_id", "freelancer_id", "lifetime_released_before"},
     }
     for table, columns in required.items():
@@ -99,11 +99,19 @@ def validate_input_data(data):
             raise ValueError(f"Project {row['project_id']} refers to unknown client")
         if row["freelancer_id"] not in freelancers:
             raise ValueError(f"Project {row['project_id']} refers to unknown freelancer")
+    projects_with_milestones = {row["project_id"] for row in data["milestones"]}
+    for pid in projects:
+        if pid not in projects_with_milestones:
+            raise ValueError(f"Project {pid} must contain at least one milestone")
     for row in data["milestones"]:
         if row["project_id"] not in projects:
             raise ValueError(f"Milestone {row['milestone_id']} refers to unknown project")
         if cash(row["amount"]) <= Z:
             raise ValueError(f"Milestone {row['milestone_id']} must have a positive amount")
+        try:
+            datetime.strptime(row["due_date"], "%Y-%m-%d")
+        except (ValueError, TypeError):
+            raise ValueError(f"Milestone {row['milestone_id']} must have a valid due_date (YYYY-MM-DD)")
 
 
 def print_state(milestones):
@@ -193,7 +201,7 @@ def execute(data, commands):
                        state="CREATED", funded=Z, released=Z, refunded=Z, fees=Z,
                        started=False, submitted=None, revisions=0, dispute_stage="",
                        raised_by="", reason="", dispute_at=None, evidence=set(),
-                       mediation_at=None, resolved=False)
+                       mediation_at=None, arbitration_at=None, resolved=False)
         by_project[r["project_id"]].append(mid)
 
     logs, withdrawals, disputes = [], [], []
@@ -249,6 +257,18 @@ def execute(data, commands):
             fr["clean_releases_since_demotion"] = str(int(fr.get("clean_releases_since_demotion",0))+1)
         return gross, service, tax, net
 
+    def begin_arbitration(m, at):
+        m["dispute_stage"] = "ARBITRATION"
+        if m.get("arbitration_at") is None:
+            m["arbitration_at"] = at
+
+    def approve_and_release(m, t, line, cmd, message):
+        before = m["state"]
+        m["state"] = "APPROVED"
+        log(line, cmd, "SUCCESS", before, "APPROVED", msg="Client approval recorded")
+        gross, service, tax, net = release(m, t)
+        log(line, "RELEASE", "SUCCESS", "APPROVED", m["state"], gross, service, tax, net, message)
+
     def resolve(m, pct, t, line, cmd):
         pct = Decimal(str(pct))
         if pct not in AWARDS: raise ValueError("Award must be 0, 25, 50, 75 or 100")
@@ -263,9 +283,12 @@ def execute(data, commands):
         fy = fy_totals.get(key, cash(fr.get("fy_gross_released_to_date",0)))
         tax = tds_for(award, fy) if award else Z
         net = cash(award-service-tax)
-        arb = min(gross, max(Decimal(2000), cash(gross*Decimal(".05"))))
-        payer = "CLIENT" if pct > 50 else "FREELANCER" if pct < 50 else "BOTH"
-        if pct == 50: arb = cash(arb/2)
+        arb = min(
+    m["amount"],
+    max(Decimal("2000"), cash(m["amount"] * Decimal("0.05")))
+)
+        # A 50-50 award has no losing party; the register does not define who pays.
+        payer = "CLIENT" if pct > 50 else "FREELANCER" if pct < 50 else "UNSPECIFIED (50-50 TIE)"
         m["released"] += award
         m["refunded"] += refund
         m["fees"] += service+arb
@@ -279,29 +302,33 @@ def execute(data, commands):
                              fee_paid_by=payer, freelancer_net=net, client_refund=refund))
         log(line,cmd,"SUCCESS","DISPUTED",m["state"],award,service+arb,tax,net,"Dispute resolved")
 
-    def timers(now, line):
+    def timers(now, line, skip_auto_mid=None):
         nonlocal active_mid
         for m in ms.values():
-            if m["state"] == "SUBMITTED" and m["submitted"]:
+            if m["id"] != skip_auto_mid and m["state"] == "SUBMITTED" and m["submitted"]:
                 client = clients[project_of(m)["client_id"]]
                 days = 7 if client.get("account_status","").upper() == "INACTIVE" else 14
                 if now >= m["submitted"]+timedelta(days=days):
                     before = m["state"]
                     active_mid = m["id"]
-                    a,f,x,n = release(m,now)
-                    log(line,"AUTO_APPROVE","SUCCESS",before,m["state"],a,f,x,n,"Automatic approval timer")
+                    approve_and_release(m,now,line,"AUTO_APPROVE","Automatic approval timer")
             if m["state"] == "DISPUTED" and not m["resolved"] and m["dispute_at"]:
-                if now >= m["dispute_at"]+timedelta(days=5):
+                if now > m["dispute_at"]+timedelta(days=5):
                     missing = {"CLIENT","FREELANCER"}-m["evidence"]
                     if len(missing) == 1:
                         active_mid = m["id"]
                         winner = next(iter(m["evidence"]))
                         resolve(m,100 if winner=="FREELANCER" else 0,now,line,"EVIDENCE_DEFAULT")
+                    elif len(missing) == 2 and m["dispute_stage"] in ("DISPUTED", "EVIDENCE"):
+                        # No default winner is defined when both parties miss evidence.
+                        # Keep the case unresolved and continue through mediation.
+                        m["dispute_stage"] = "MEDIATION"
+                        m["mediation_at"] = m["dispute_at"] + timedelta(days=5)
                     elif not missing and not m["mediation_at"]:
                         m["dispute_stage"],m["mediation_at"] = "MEDIATION",m["dispute_at"]+timedelta(days=5)
             if m["state"]=="DISPUTED" and m["dispute_stage"]=="MEDIATION" and m["mediation_at"]:
                 if now >= m["mediation_at"]+timedelta(days=7):
-                    m["dispute_stage"]="ARBITRATION"
+                    begin_arbitration(m, m["mediation_at"]+timedelta(days=7))
         for pid, last in list(last_event.items()):
             if now >= last+timedelta(days=90):
                 for mid in by_project[pid]:
@@ -320,7 +347,8 @@ def execute(data, commands):
         line, cmd, args, now = item["line"], item["command"], item["args"], item["time"]
         if item["error"]:
             log(line,cmd,"REJECTED",msg=item["error"]); continue
-        timers(now,line)
+        target_mid = args[0] if args and cmd not in ("WITHDRAW", "STATEMENT", "PRINT_STATE") else None
+        timers(now, line, skip_auto_mid=target_mid if cmd == "DISPUTE" else None)
         m = ms.get(args[0]) if args and cmd not in ("WITHDRAW", "STATEMENT", "PRINT_STATE") else None
         active_mid = m["id"] if m else ""
         try:
@@ -360,8 +388,7 @@ def execute(data, commands):
                 if len(args)!=1 or not m: raise ValueError("APPROVE needs milestone_id")
                 before=m["state"]
                 if m["state"]!="SUBMITTED": raise ValueError("Only submitted work can be approved")
-                a,f,x,n=release(m,now)
-                log(line,cmd,"SUCCESS",before,m["state"],a,f,x,n,"Approved and released")
+                approve_and_release(m,now,line,cmd,"Approved and released")
                 last_event[m["project"]]=now
 
             elif cmd=="REQUEST_REVISION":
@@ -400,15 +427,19 @@ def execute(data, commands):
                 last_event[m["project"]]=now
 
             elif cmd=="MEDIATION_FAILED":
-                if len(args)!=1 or not m or m["state"]!="DISPUTED" or m["dispute_stage"]!="MEDIATION":
-                    raise ValueError("Milestone must be in mediation")
-                m["dispute_stage"]="ARBITRATION"
-                log(line,cmd,"SUCCESS",m["state"],m["state"],msg="Moved to arbitration")
+                if len(args)!=1 or not m or m["state"]!="DISPUTED" or m["dispute_stage"] not in ("MEDIATION", "ARBITRATION"):
+                    raise ValueError("Milestone must have completed or be completing mediation")
+                begin_arbitration(m,now)
+                log(line,cmd,"SUCCESS",m["state"],m["state"],msg="Mediation ended; arbitration active")
                 last_event[m["project"]]=now
 
             elif cmd=="ARBITRATION_AWARD":
-                if len(args)!=2 or not m or m["state"]!="DISPUTED" or m["resolved"]:
-                    raise ValueError("ARBITRATION_AWARD needs an open dispute and percentage")
+                if len(args)!=2 or not m or m["state"]!="DISPUTED" or m["resolved"] or m["dispute_stage"]!="ARBITRATION":
+                    raise ValueError("ARBITRATION_AWARD requires an unresolved dispute in ARBITRATION stage")
+                if m.get("arbitration_at") is None:
+                    raise ValueError("Arbitration start date is missing")
+                if now > m["arbitration_at"] + timedelta(days=10):
+                    raise ValueError("Arbitration decision deadline exceeded (10 days)")
                 resolve(m,args[1],now,line,cmd)
                 last_event[m["project"]]=now
 
@@ -422,14 +453,14 @@ def execute(data, commands):
                 if m["started"] and party=="CLIENT":
                     cid=p["client_id"]
                     recent=[d for d in cancel_history[cid] if now-d<=timedelta(days=90)]
-                    if len(recent)>=1: charge=Decimal("500")
+                    if len(recent)>=2: charge=Decimal("500")
                     cancel_history[cid].append(now)
                 if m["started"] and party=="FREELANCER":
                     fr=freelancers[p["freelancer_id"]]
                     level=fr.get("reliability_level","A").upper()
                     fr["reliability_level"]="B" if level=="A" else "C" if level=="B" else "C"
                     fr["clean_releases_since_demotion"]="0"
-                m["refunded"]+=refund; m["state"]="REFUNDED"
+                m["refunded"]+=refund; m["fees"]+=charge; m["state"]="REFUNDED"
                 log(line,cmd,"SUCCESS",before,m["state"],refund,charge,msg="Cancelled; escrow refunded; processing fee retained")
                 last_event[m["project"]]=now
 
@@ -444,7 +475,7 @@ def execute(data, commands):
                 sunday=monday+timedelta(days=7)
                 week=sum((r["requested"] for r in withdrawn[fid] if monday<=r["time"]<sunday),Z)
                 unlocked=sum((net for rt,net in releases[fid] if now>=rt+timedelta(days=3)),Z)
-                already=sum((r["paid"] for r in withdrawn[fid]),Z)
+                already=sum((r["requested"] for r in withdrawn[fid]),Z)
                 available=cash(max(Z,unlocked-already))
                 fee=Decimal(25) if amount<10000 else Z
                 status="ACCEPTED"; msg="Withdrawal processed"
