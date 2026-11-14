@@ -324,9 +324,26 @@ def execute(data, commands):
                         m["mediation_at"] = m["dispute_at"] + timedelta(days=5)
                     elif not missing and not m["mediation_at"]:
                         m["dispute_stage"],m["mediation_at"] = "MEDIATION",m["dispute_at"]+timedelta(days=5)
-            if m["state"]=="DISPUTED" and m["dispute_stage"]=="MEDIATION" and m["mediation_at"]:
-                if now >= m["mediation_at"]+timedelta(days=7):
-                    begin_arbitration(m, m["mediation_at"]+timedelta(days=7))
+            if (
+                m["state"] == "DISPUTED"
+                and m["dispute_stage"] == "MEDIATION"
+                and m["mediation_at"]
+            ):
+                project_last_event = last_event.get(m["project"])
+
+                inactivity_due = (
+                    project_last_event is not None
+                    and now >= project_last_event + timedelta(days=90)
+                )
+
+                if (
+                    now >= m["mediation_at"] + timedelta(days=7)
+                    and not inactivity_due
+                ):
+                    begin_arbitration(
+                        m,
+                        m["mediation_at"] + timedelta(days=7)
+                    )
         for pid, last in list(last_event.items()):
             if now >= last + timedelta(days=90):
                 for mid in by_project[pid]:
