@@ -32,7 +32,7 @@ line_no,freelancer_id,requested,status,fee,paid,available_after,message
 213,FRL-011,1000.00,ACCEPTED,25.00,975.00,91200.00,Withdrawal processed
 217,FRL-009,12000.00,ACCEPTED,0.00,12000.00,33800.00,Withdrawal processed
 221,FRL-016,2500.00,REJECTED,0.00,0.00,0.00,Insufficient released and unlocked balance
-222,FRL-010,15000.00,REJECTED,0.00,0.00,0.00,Insufficient released and unlocked balance
+222,FRL-010,15000.00,REJECTED,0.00,0.00,13500.00,Insufficient released and unlocked balance
 223,FRL-020,8000.00,REJECTED,0.00,0.00,0.00,Insufficient released and unlocked balance
 224,FRL-020,8000.00,REJECTED,0.00,0.00,0.00,Insufficient released and unlocked balance
 226,FRL-019,5000.00,REJECTED,0.00,0.00,0.00,Insufficient released and unlocked balance

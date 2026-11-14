@@ -328,18 +328,38 @@ def execute(data, commands):
                 if now >= m["mediation_at"]+timedelta(days=7):
                     begin_arbitration(m, m["mediation_at"]+timedelta(days=7))
         for pid, last in list(last_event.items()):
-            if now >= last+timedelta(days=90):
+            if now >= last + timedelta(days=90):
                 for mid in by_project[pid]:
-                    m=ms[mid]
-                    if m["state"] not in ("RELEASED","REFUNDED"):
-                        before=m["state"]
+                    m = ms[mid]
+
+                    remaining_escrow = cash(
+                        m["funded"] - m["released"] - m["refunded"]
+                    )
+
+                    if (
+                        m["state"] not in ("RELEASED", "REFUNDED")
+                        and remaining_escrow > Z
+                    ):
+                        before = m["state"]
                         active_mid = m["id"]
-                        refund=cash(m["funded"]-m["released"]-m["refunded"])
-                        m["refunded"]+=refund
-                        m["state"]="REFUNDED"
-                        log(line,"AUTO_CANCEL_INACTIVE","SUCCESS",before,m["state"],refund,
-                            Z,Z,Z,"Project inactive for 90 days; escrow refunded")
-                last_event[pid]=now
+
+                        m["refunded"] = cash(
+                            m["refunded"] + remaining_escrow
+                        )
+                        m["state"] = "REFUNDED"
+
+                        log(
+                            line,
+                            "AUTO_CANCEL_INACTIVE",
+                            "SUCCESS",
+                            before,
+                            m["state"],
+                            remaining_escrow,
+                            Z, Z, Z,
+                            "Project inactive for 90 days; escrow refunded"
+                        )
+
+                last_event[pid] = now
 
     for item in commands:
         line, cmd, args, now = item["line"], item["command"], item["args"], item["time"]
