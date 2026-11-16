@@ -75,6 +75,9 @@ The main objective is to ensure secure and accurate financial transactions while
 ## Project Structure
 
 ```text
+
+## Project Structure
+
 T119-PS-104/
 │
 ├── data/
@@ -102,6 +105,7 @@ T119-PS-104/
 │
 ├── .gitignore
 └── README.md
+
 ```
 
 ## Requirements
