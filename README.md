@@ -75,9 +75,6 @@ The main objective is to ensure secure and accurate financial transactions while
 ## Project Structure
 
 ```text
-
-## Project Structure
-
 T119-PS-104/
 │
 ├── data/
@@ -105,7 +102,6 @@ T119-PS-104/
 │
 ├── .gitignore
 └── README.md
-
 ```
 
 ## Requirements
@@ -113,11 +109,6 @@ T119-PS-104/
 - Python 3.10 or above
 - Visual Studio Code or another Python-compatible editor
 
-<<<<<<< HEAD
-=======
-```
-
->>>>>>> 553b687 (Updated final project files)
 ## Business Rules
 
 The application follows the defined business rules covering:
