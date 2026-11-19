@@ -75,30 +75,41 @@ The main objective is to ensure secure and accurate financial transactions while
 ## Project Structure
 
 ```text
+## Project Structure
+
+```text
 T119-PS-104/
 │
 ├── data/
-│   ├── README.md
 │   ├── clients.csv
 │   ├── freelancers.csv
 │   ├── projects.csv
 │   ├── milestones.csv
 │   ├── relationship_history.csv
-│   └── commands.txt
+│   ├── commands.txt
+│   └── README.md
 │
 ├── docs/
-│   ├── Design Document
-│   └── Decision Log
+│   ├── Design_Document.pdf
+│   ├── Decision_Log.pdf
+│   └── business_rule_register.md
 │
 ├── output/
-│   └── Generated output files
+│   ├── milestone_log.csv
+│   ├── withdrawals.csv
+│   ├── disputes.csv
+│   └── escrow_ledger.csv
 │
 ├── src/
 │   └── main.py
 │
 ├── tests/
-│   ├── edge_case_tests.md
-│   └── test_main.py
+│   ├── test_main.py
+│   ├── test_milestones.py
+│   ├── test_fees.py
+│   ├── test_disputes.py
+│   ├── test_withdrawals.py
+│   └── edge_case_tests.md
 │
 ├── .gitignore
 └── README.md
