@@ -162,6 +162,12 @@ The application was tested using the provided sample data and command files. The
 | Member 1 | Vidya M |
 | Member 2 | Vijay Suresh Vathare |
 
+## Demo Video
+
+The 5-minute demonstration video of the project is available below:
+
+[Watch the Project Demo](https://drive.google.com/file/d/1nK8HzcxJ-a_kBtT4O1Q6EaAa9zW3OvF-/view?usp=sharing)
+
 ## Conclusion
 
 The project implements a rule-based freelance marketplace engine that manages escrow funding, milestone payments, fee calculations, dispute resolution, cancellations and withdrawals. It aims to provide accurate financial processing and consistent enforcement of marketplace business rules.
